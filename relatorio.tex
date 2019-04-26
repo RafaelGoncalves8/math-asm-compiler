@@ -1,0 +1,133 @@
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage[portuges]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.9in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{datetime}
+\usepackage{enumerate}
+\usepackage{multicol}
+\renewcommand{\baselinestretch}{1.1}
+
+\emergencystretch 1pt%
+
+\title{Relatório EA876 - Trabalho 1}
+\author{Larissa Medeiros (178014) e Rafael Gonçalves (186062)}
+\date{}
+\begin{document}
+
+\maketitle
+\begin{multicols*}{2}
+
+\section*{Introdução}
+
+O objetivo do trabalho foi fazer um compilador de expressões matemáticas para código assembly para um processador de arquitetura ARM usando as linguagens Lex e Yacc.
+
+A nossa abordagem consistiu em criar uma sintaxe livre de contexto que cobrisse todos os casos de expressões matemáticas a serem tratados e então resolver os casos base.
+
+\section*{Método}
+
+Identificamos quais elementos precisariam ser identificados pelo Lex para a criação de tokens que seriam usados no Yacc. As regras no Yacc foram definidas segundo a seguinte gramática livre de contexto:
+
+\begin{multicols*}{2}
+\setlength{\columnsep}{0em}
+\begin{enumerate}
+\item
+S $\rightarrow$ E
+
+\item
+E $\rightarrow$ N
+
+\item
+E $\rightarrow$ (E)
+
+\item
+E $\rightarrow$ E Op E
+
+\item
+Op $\rightarrow$ +
+
+\item
+Op $\rightarrow$ -
+
+\item
+Op $\rightarrow$ *
+
+\item
+N $\rightarrow$ [0-9]*
+
+\item
+N $\rightarrow$ \\ \textbackslash(\textbackslash-[0-9]*\textbackslash)
+
+\end{enumerate}
+
+\end{multicols*}
+
+As principais expressões a serem tratadas foram as que se resolvem para o símbolo E, já que isso significa efetivamente a resolução de expressões de forma recursiva.
+
+Não conseguimos resolver o problema de identificar quaisquer números negativos. A implementação atual admite que números negativos estarão sempre entre parênteses.
+
+Tratamos o problema do armazenamento dos operandos na própria linguagem assembly, ou seja, imprimimos código a fim de manipular a pilha do processador.
+
+A primeira expressão da gramática apenas define que o programa se resume a um símbolo intermediário de expressão, necessariamente. As rotinas de resolução dos casos 3, 5, 6, 7, 8 e 9 são simplesmente atribuições. Os demais casos imprimem instruções assembly de fato, como mostrados na seção "Resultados".
+
+\section*{Resultados}
+
+Como proposto, nosso programa não resolve as expressões em C, mas sim imprime o código assembly que deve ser executado por um processador de arquitetura ARM.
+
+As rotinas que imprimem código assembly são os casos 2 e 4 da gramática, que foram implementados da seguinte maneira:
+
+\begin{multicols*}{2}
+Caso 2:
+\begin{verbatim}
+    mov r0, #N
+    push r0
+\end{verbatim}
+
+\vspace{2em}
+
+Caso 4:
+\begin{verbatim}
+    pop r2
+    pop r1
+    OP r0, r1, r2
+    push r0
+\end{verbatim}
+
+\end{multicols*}
+
+Em que OP pode ser: add, mul ou sub e N é um número inteiro.
+
+Segue o código produzido pelo exemplo: $$(-5)*(5 + 2) - 7$$
+
+\begin{multicols*}{2}
+
+\begin{verbatim}
+    mov r0, #-5
+    push r0
+    mov r0, #5
+    push r0
+    mov r0,#2
+    push r0
+    pop r2
+    pop r1
+    add r0, r1, r2
+    push r0
+
+    pop r2
+    pop r1
+    mul r0, r1, r2
+    push r0
+    mov r0, #7
+    push r0
+    pop r2
+    pop r1
+    sub r0, r1, r2
+    push r0
+\end{verbatim}
+
+\end{multicols*}
+
+\end{multicols*}
+\end{document}
