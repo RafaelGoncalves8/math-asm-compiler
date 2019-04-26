@@ -42,6 +42,10 @@
 *.idb
 *.pdb
 
+# Tex
+*.aux
+*.log
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd
