@@ -43,8 +43,8 @@
 *.pdb
 
 # Tex
-*.aux
-*.log
+**/*.aux
+**/*.log
 
 # Kernel Module Compile Results
 *.mod*
