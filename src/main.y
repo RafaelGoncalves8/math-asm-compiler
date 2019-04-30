@@ -5,8 +5,10 @@
 void yyerror(char *c);
 int yylex(void);
 void print_mul();
+void print_init();
 
 int mul = 0;
+int b_count = 0
 
 %}
 
@@ -16,7 +18,7 @@ int mul = 0;
 
 PROGRAM:
         E {
-            printf("\\o/\n");
+            //printf("%d\n", $1);
             return 0;
           }
         |
@@ -25,7 +27,7 @@ PROGRAM:
 E:
     N {
         printf("mov r0, #%d\n", $1);
-        printf("str r0, [r3]!\n");
+        printf("str r0, [r3], #4\n");
         $$ = $1;
     }
     | L_BRACKET E R_BRACKET {
@@ -33,20 +35,22 @@ E:
     }
     | E MUL E {
         mul = 1;
-        printf("b mul\n");
+        printf("main%d b mul\n");
         $$ = $1 * $2;
       }
     | E ADD E {
-        printf("ldr r2, [r3]!\n");
-        printf("ldr r1, [r3]!\n");
-        printf("add r0, r1, r2\n");
+        printf("        ldr r2, [r3, #-4]!\n");
+        printf("        ldr r1, [r3, #-4]!\n");
+        printf("        add r0, r1, r2\n");
+        printf("        str r0, [r3], #4\n");
         $$ = $1 + $2;
       }
     | E SUB E {
-        printf("ldr r2, [r3]!\n");
-        printf("ldr r1, [r3]!\n");
-        printf("add r0, r1, r2\n");
-        $$ = $2 - $1;
+        printf("        ldr r2, [r3, #-4]!\n");
+        printf("        ldr r1, [r3, #-4]!\n");
+        printf("        sub r0, r1, r2\n");
+        printf("        str r0, [r3], #4\n");
+        $$ = $1 - $2;
       }
     ;
 
@@ -57,11 +61,16 @@ void yyerror(char *s) {
 }
 
 void print_mul(){
-    printf("ldr r2, [r3]!\n");
-    printf("ldr r1, [r3]!\n");
+    printf("ldr r2, [r3, #-4]!\n");
+    printf("ldr r1, [r3, #-4]!\n");
+}
+
+void print_init(){
+    printf("mov r3, #3200\n");
 }
 
 int main() {
+  print_init();
   yyparse();
   if (mul)
     print_mul();

@@ -10,5 +10,8 @@ y.tab.c:src/main.y
 test:all
 	./main < test/01.in
 
+out:all
+	./main < test/01.in > 01.s
+
 clean:
 	rm y.tab.c lex.yy.c y.tab.h main

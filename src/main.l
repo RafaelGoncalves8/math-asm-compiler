@@ -3,38 +3,39 @@
 void yyerror(char *);
 
 #include "y.tab.h"
-
 %}
 
-DIGIT [0-9]
 
 %%
 
-DIGIT*  {
+[0-9]+  {
+            yylval = atoi(yytext);
             return N;
         }
 
-\(\-DIGIT*\) {
-                return N;
-             }
+([(][-][0-9]+[)]) {
+            yylval = atoi(yytext);
+            return N;
+            }
 
-\+      {
+
+[+]      {
             return ADD;
         }
 
-\-      {
+[-]      {
             return SUB;
         }
 
-\*      {
+[*]      {
             return MUL;
         }
 
-\(      {
+[(]      {
             return L_BRACKET;
         }
 
-\)      {
+[)]      {
             return R_BRACKET;
         }
 
