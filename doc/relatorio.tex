@@ -8,7 +8,7 @@
 \usepackage{datetime}
 \usepackage{enumerate}
 \usepackage{multicol}
-\renewcommand{\baselinestretch}{1.1}
+\renewcommand{\baselinestretch}{1.0}
 
 \emergencystretch 1pt%
 
@@ -22,13 +22,13 @@
 
 \section*{Introdução}
 
-O objetivo do trabalho foi fazer um compilador de expressões matemáticas para código assembly para um processador de arquitetura ARM usando as linguagens Lex e Yacc.
+    O objetivo do trabalho foi fazer um compilador de expressões matemáticas para código assembly executável em processador de arquitetura ARM usando as linguagens Lex e Yacc.
 
 A nossa abordagem consistiu em criar uma sintaxe livre de contexto que cobrisse todos os casos de expressões matemáticas a serem tratados e então resolver os casos base.
 
 \section*{Método}
 
-Identificamos quais elementos precisariam ser identificados pelo Lex para a criação de tokens que seriam usados no Yacc. As regras no Yacc foram definidas segundo a seguinte gramática livre de contexto:
+Selecionamos quais elementos precisariam ser identificados pelo Lex para a criação de tokens que seriam usados no Yacc. As regras no Yacc foram definidas segundo a seguinte gramática livre de contexto:
 
 \begin{multicols*}{2}
 \setlength{\columnsep}{0em}
@@ -64,40 +64,39 @@ N $\rightarrow$ \\ \textbackslash(\textbackslash-[0-9]*\textbackslash)
 
 \end{multicols*}
 
-As principais expressões a serem tratadas foram as que se resolvem para o símbolo E, já que isso significa efetivamente a resolução de expressões de forma recursiva.
+As principais expressões tratadas foram as que se resolvem para o símbolo E, já que isso significa efetivamente a resolução de expressões de forma recursiva.
 
-Não conseguimos resolver o problema de identificar quaisquer números negativos. A implementação atual admite que números negativos estarão sempre entre parênteses.
-
-Tratamos o problema do armazenamento dos operandos na própria linguagem assembly, ou seja, imprimimos código a fim de manipular a pilha do processador.
-
-A primeira expressão da gramática apenas define que o programa se resume a um símbolo intermediário de expressão, necessariamente. As rotinas de resolução dos casos 3, 5, 6, 7, 8 e 9 são simplesmente atribuições. Os demais casos imprimem instruções assembly de fato, como mostrados na seção "Resultados".
-
-\section*{Resultados}
-
-Como proposto, nosso programa não resolve as expressões em C, mas sim imprime o código assembly que deve ser executado por um processador de arquitetura ARM.
-
-As rotinas que imprimem código assembly são os casos 2 e 4 da gramática, que foram implementados da seguinte maneira:
+A primeira expressão da gramática apenas define que o programa se resume a um símbolo intermediário de expressão, necessariamente. As rotinas de resolução dos casos 3, 5, 6, 7, 8 e 9 são simplesmente atribuições. Os demais casos imprimem instruções assembly, como mostradosa seguir:
 
 \begin{multicols*}{2}
-Caso 2:
+\bf Caso 2:
 \begin{verbatim}
     mov r0, #N
-    push r0
+    str r0, [sp, $4]!
 \end{verbatim}
 
-\vspace{2em}
+\break
+\vfill
 
 Caso 4:
 \begin{verbatim}
-    pop r2
-    pop r1
+    ldr r2, [sp, #4]!
+    ldr r1, [sp, #4]!
     OP r0, r1, r2
-    push r0
+    str r0, [sp, #4]!
 \end{verbatim}
 
 \end{multicols*}
 
 Em que OP pode ser: add, mul ou sub e N é um número inteiro.
+
+Tratamos o problema do armazenamento dos operandos na própria linguagem assembly. Utilizamos os comandos STR para armazenar o resultado de cada expressão intermediária na pilha e LDR para carregar resultados da pilha nos registradores utilizados nas operações.
+
+\section*{Resultados}
+
+Como proposto, nosso programa não resolve as expressões em C, mas sim imprime o código assembly que resolve a expressão.
+
+Não conseguimos resolver o problema de identificar quaisquer números negativos. A implementação atual admite que números negativos estarão sempre entre parênteses.
 
 Segue o código produzido pelo exemplo: $$(-5)*(5 + 2) - 7$$
 
