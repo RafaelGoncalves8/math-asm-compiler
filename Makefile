@@ -1,17 +1,14 @@
+all:lex.yy.c y.tab.c
+	gcc -omain lex.yy.c y.tab.c -lfl -Wall
 
+lex.yy.c:src/main.l
+	flex src/main.l
 
+y.tab.c:src/main.y
+	bison -dy src/main.y
 
-all: lex.yy.c y.tab.c
-	gcc -omain lex.yy.c y.tab.c -ll
-
-lex.yy.c:calc1.l y.tab.c
-	flex calc1.l
-
-y.tab.c:calc1.y
-	bison -dy calc1.y
-
-test: lex.yy.c y.tab.c
-	# for test in test run test
+test:all
+	./main < test/01.in
 
 clean:
 	rm y.tab.c lex.yy.c y.tab.h main

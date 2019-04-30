@@ -41,11 +41,6 @@ DIGIT*  {
 
 [ \t\n]+ ;
 
-.       {
-            return CHAR;
-        }
-
-
 %%
 
 int yywrap() {
