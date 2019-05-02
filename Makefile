@@ -1,17 +1,51 @@
-all:lex.yy.c y.tab.c
-	gcc -omain lex.yy.c y.tab.c -lfl -Wall
+# Compilation macros
+CC=gcc
+CFLAGS=-Wextra -lfl
+LEX=flex
+YACC=bison
 
-lex.yy.c:src/main.l
-	flex src/main.l
+# Files
+DIR=src
+YYTABH=$(DIR)/y.tab.h
+YYTABC=$(DIR)/y.tab.c
+LEXOUT=$(DIR)/lex.yy.c
+YACCFILE=$(DIR)/main.y
+LEXFILE=$(DIR)/main.l
+TARGET=./main
 
-y.tab.c:src/main.y
-	bison -dy src/main.y
+# Git
+REMOTE=origin
+BRANCH=master
 
-test:all
-	./main < test/01.in
+# Out script
+BASH=sh
+OUT_SCRIPT=out.sh
+VERBOSE ?= 1
+
+all:$(TARGET)
+
+$(TARGET):$(LEXOUT) $(YYTABC)
+	$(CC) -o$(TARGET) $(LEXOUT) $(YYTABC) $(CFLAGS)
+
+$(LEXOUT):$(LEXFILE) $(YYTABC)
+	$(LEX) -o$(LEXOUT) $(LEXFILE)
+
+$(YYTABC):$(YACCFILE)
+	$(YACC) -o$(YYTABC) -dy $(YACCFILE)
 
 out:all
-	./main < test/01.in > 01.s
+	$(BASH) $(OUT_SCRIPT) $(TARGET) $(VERBOSE)
+
+commit:
+	git commit -a
+
+push:
+	git push $(REMOTE) $(BRANCH)
 
 clean:
-	rm y.tab.c lex.yy.c y.tab.h main
+	$(RM) $(YYTABC)
+	$(RM) $(YYTABH)
+	$(RM) $(LEXOUT)
+	$(RM) ./$(TARGET)
+	$(RM) $(DIR)/*.o
+	$(RM) ./$(ZIPFILE)
