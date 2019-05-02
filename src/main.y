@@ -8,11 +8,12 @@ void print_mul();
 void print_init();
 
 int mul = 0;
-int b_count = 0
+int b_count = 0;
 
 %}
 
 %token N ADD SUB MUL R_BRACKET L_BRACKET
+%left ADD SUB
 
 %%
 
@@ -26,8 +27,8 @@ PROGRAM:
 
 E:
     N {
-        printf("mov r0, #%d\n", $1);
-        printf("str r0, [r3], #4\n");
+        printf("        mov r0, #%d\n", $1);
+        printf("        str r0, [r3], #4\n");
         $$ = $1;
     }
     | L_BRACKET E R_BRACKET {
@@ -61,12 +62,12 @@ void yyerror(char *s) {
 }
 
 void print_mul(){
-    printf("ldr r2, [r3, #-4]!\n");
-    printf("ldr r1, [r3, #-4]!\n");
+    printf("        ldr r2, [r3, #-4]!\n");
+    printf("        ldr r1, [r3, #-4]!\n");
 }
 
 void print_init(){
-    printf("mov r3, #3200\n");
+    printf("        mov r3, #3200\n");
 }
 
 int main() {

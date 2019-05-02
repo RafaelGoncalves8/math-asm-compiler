@@ -1,10 +1,14 @@
-#! /bin/sh
+#!/bin/sh
 
 program=$1
-dirtestes=./test
-tests=`find $dirtestes -name '*.in'`
+dirtests=./test
+tests=`find $dirtests -name '*.in'`
+
+echo "$program"
 
 for t in $tests
 do
-  $program < $t > ./$$.s
+  echo "$t"
+  echo "${t%.*}"
+  $program < $t > ./${t%.*}.s
 done

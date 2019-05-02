@@ -6,6 +6,7 @@ YACC=bison
 
 # Files
 DIR=src
+TESTS=test
 YYTABH=$(DIR)/y.tab.h
 YYTABC=$(DIR)/y.tab.c
 LEXOUT=$(DIR)/lex.yy.c
@@ -45,6 +46,6 @@ clean:
 	$(RM) $(YYTABC)
 	$(RM) $(YYTABH)
 	$(RM) $(LEXOUT)
-	$(RM) ./$(TARGET)
+	$(RM) $(TARGET)
 	$(RM) $(DIR)/*.o
-	$(RM) ./$(ZIPFILE)
+	$(RM) $(TESTS)/*.s
