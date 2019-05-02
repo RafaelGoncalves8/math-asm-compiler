@@ -20,7 +20,6 @@ BRANCH=master
 # Out script
 BASH=sh
 OUT_SCRIPT=out.sh
-VERBOSE ?= 1
 
 all:$(TARGET)
 
@@ -34,7 +33,7 @@ $(YYTABC):$(YACCFILE)
 	$(YACC) -o$(YYTABC) -dy $(YACCFILE)
 
 out:all
-	$(BASH) $(OUT_SCRIPT) $(TARGET) $(VERBOSE)
+	$(BASH) $(OUT_SCRIPT) $(TARGET)
 
 commit:
 	git commit -a
