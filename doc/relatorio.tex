@@ -1,4 +1,4 @@
-\documentclass[a4paper, 11pt]{article}
+\documentclass[a4paper, 10pt]{article}
 
 \usepackage[portuges]{babel}
 \usepackage[utf8]{inputenc}
@@ -58,7 +58,7 @@ Op $\rightarrow$ -
 Op $\rightarrow$ *
 
 \item
-N $\rightarrow$ [0-9]*
+N $\rightarrow$ [0-9]+
 
 \end{enumerate}
 
@@ -66,7 +66,7 @@ N $\rightarrow$ [0-9]*
 
 As principais expressões tratadas foram as que se resolvem para o símbolo E, já que isso significa efetivamente a resolução de expressões de forma recursiva.
 
-A primeira expressão da gramática apenas define que o programa se resume a um símbolo intermediário de expressão, necessariamente. As rotinas de resolução dos casos 3, 4, 6, 7, 8 e 9 são simplesmente atribuições. Os demais casos imprimem instruções assembly, como mostradosa seguir:
+    A primeira expressão da gramática apenas define que o programa sempre se reduz a uma expressão (símbolo intermediário E). As rotinas de resolução dos casos 3, 4, 6, 7, 8 e 9 são simplesmente atribuições. Os demais casos imprimem instruções assembly, como mostradosa seguir:
 
 \begin{multicols*}{2}
 \bf Caso 2:
@@ -88,9 +88,35 @@ str r0, [SP], #4
 
 \end{multicols*}
 
-Em que OP pode ser: add, mul ou sub, N é um número inteiro e SP é o stack pointer, no nosso caso o r10.
+Em que OP pode ser: add ou sub, N é um número inteiro e SP é o stack pointer, no nosso caso o r10.
 
-Tratamos o problema do armazenamento dos operandos na própria linguagem assembly. Utilizamos os comandos STR para armazenar o resultado de cada expressão intermediária na pilha e LDR para carregar resultados da pilha nos registradores utilizados nas operações.
+Para o caso em que há multiplicaçãoi (indicada por uma flag), uma subrotina é impressa no fim do código. Ela foi implementada como somas sucessivas, como pode ser visto a seguir:
+
+\begin{multicols*}{2}
+\begin{verbatim}
+bl mul
+str r0, [r10], #4
+...
+end
+
+mul
+ldr r2, [r10, #-4]!
+ldr r1, [r10, #-4]!
+mov r0, #0
+
+loop
+cmp r1, #0
+ble endmul
+add r0, r0, r2
+sub r1, r1, #1
+b loop
+
+endmul
+mov pc, lr
+\end{verbatim}
+\end{multicols*}
+
+Tratamos o problema do armazenamento dos operandos na própria linguagem assembly. Escolhemos o r10 como stack pointer, 3200 como endereço de início e sentido descendente. Utilizamos os comandos STR para armazenar o resultado de cada expressão intermediária na pilha e LDR para carregar resultados da pilha nos registradores utilizados nas operações.
 
 \section*{Resultados}
 
