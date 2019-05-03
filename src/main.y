@@ -13,7 +13,7 @@ int n;
 
 %}
 
-%token N ADD SUB MUL R_BRACKET L_BRACKET MUL_AND_N
+%token N ADD SUB MUL R_BRACKET L_BRACKET
 %left ADD SUB
 
 %%
@@ -55,14 +55,11 @@ E:
         printf("        str r0, [r10], #4\n");
         $$ = $1 - $2;
       }
-    |E MUL_AND_N {
-        mul = 1;
-        n = atoi(MUL_AND_N[1]);
-        printf("        mov r0, #%d\n", n);
+    | SUB E {
+        printf("        ldr r1, [r10, #-4]!\n");
+        printf("        sub r0, #1, r1\n");
         printf("        str r0, [r10], #4\n");
-        printf("        bl mul\n");
-        printf("        str r0, [r10], #4\n");
-        $$ = $1 * n;
+        $$ = $1 - $2;
     }
     ;
 

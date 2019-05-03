@@ -8,17 +8,6 @@ void yyerror(char *);
 
 %%
 
-[0-9]+  {
-            yylval = atoi(yytext);
-            return N;
-        }
-
-([(][ \t]*[-][ \t][0-9]+[ \t]*[)]) {
-            yylval = atoi(yytext);
-            return N;
-            }
-
-
 [+]      {
             return ADD;
         }
@@ -26,13 +15,10 @@ void yyerror(char *);
 [-]      {
             return SUB;
         }
-^(\-[ \t][0-9]+) {
+
+[0-9]+      {
                 yylval = atoi(yytext);
                 return N;
-            }
-
-(\*[ \t]*\-[ \t][0-9]+) {
-                return MUL_AND_N;
             }
 
 [*]      {

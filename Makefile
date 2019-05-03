@@ -22,6 +22,10 @@ BRANCH=master
 BASH=sh
 OUT_SCRIPT=out.sh
 
+SIM_SCRIPT=simula.sh
+TEST_SCRIPT=test.sh
+VERBOSE=1
+
 all:$(TARGET)
 
 $(TARGET):$(LEXOUT) $(YYTABC)
@@ -36,6 +40,10 @@ $(YYTABC):$(YACCFILE)
 out:all
 	$(BASH) $(OUT_SCRIPT) $(TARGET)
 
+test:out
+	$(BASH) $(TEST_SCRIPT) $(TARGET) $(VERBOSE)
+
+
 commit:
 	git commit -a
 
@@ -49,3 +57,4 @@ clean:
 	$(RM) $(TARGET)
 	$(RM) $(DIR)/*.o
 	$(RM) $(TESTS)/*.s
+	$(RM) $(TESTS)/*.out
