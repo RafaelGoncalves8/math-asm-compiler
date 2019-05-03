@@ -72,7 +72,7 @@ A primeira expressão da gramática apenas define que o programa se resume a um 
 \bf Caso 2:
 \begin{verbatim}
     mov r0, #N
-    str r0, [sp, $4]!
+    str r0, [SP], $4
 \end{verbatim}
 
 \break
@@ -80,15 +80,15 @@ A primeira expressão da gramática apenas define que o programa se resume a um 
 
 Caso 4:
 \begin{verbatim}
-    ldr r2, [sp, #4]!
-    ldr r1, [sp, #4]!
+    ldr r2, [SP, #-4]!
+    ldr r1, [SP, #-4]!
     OP r0, r1, r2
-    str r0, [sp, #4]!
+    str r0, [SP], #4
 \end{verbatim}
 
 \end{multicols*}
 
-Em que OP pode ser: add, mul ou sub e N é um número inteiro.
+Em que OP pode ser: add, mul ou sub, N é um número inteiro e SP é o stack pointer, no nosso caso o r3.
 
 Tratamos o problema do armazenamento dos operandos na própria linguagem assembly. Utilizamos os comandos STR para armazenar o resultado de cada expressão intermediária na pilha e LDR para carregar resultados da pilha nos registradores utilizados nas operações.
 

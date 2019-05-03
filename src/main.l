@@ -13,7 +13,7 @@ void yyerror(char *);
             return N;
         }
 
-([(][-][0-9]+[)]) {
+([(][ \t]*[-][ \t][0-9]+[ \t]*[)]) {
             yylval = atoi(yytext);
             return N;
             }
@@ -26,6 +26,14 @@ void yyerror(char *);
 [-]      {
             return SUB;
         }
+^(\-[ \t][0-9]+) {
+                yylval = atoi(yytext);
+                return N;
+            }
+
+(\*[ \t]*\-[ \t][0-9]+) {
+                return MUL_AND_N;
+            }
 
 [*]      {
             return MUL;

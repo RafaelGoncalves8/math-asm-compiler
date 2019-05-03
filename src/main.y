@@ -9,10 +9,11 @@ void print_init();
 
 int mul = 0;
 int b_count = 0;
+int n;
 
 %}
 
-%token N ADD SUB MUL R_BRACKET L_BRACKET
+%token N ADD SUB MUL R_BRACKET L_BRACKET MUL_AND_N
 %left ADD SUB
 
 %%
@@ -28,7 +29,7 @@ PROGRAM:
 E:
     N {
         printf("        mov r0, #%d\n", $1);
-        printf("        str r0, [r3], #4\n");
+        printf("        str r0, [r10], #4\n");
         $$ = $1;
     }
     | L_BRACKET E R_BRACKET {
@@ -36,38 +37,57 @@ E:
     }
     | E MUL E {
         mul = 1;
-        printf("main%d b mul\n");
+        printf("        bl mul\n");
+        printf("        str r0, [r10], #4\n");
         $$ = $1 * $2;
       }
     | E ADD E {
-        printf("        ldr r2, [r3, #-4]!\n");
-        printf("        ldr r1, [r3, #-4]!\n");
+        printf("        ldr r2, [r10, #-4]!\n");
+        printf("        ldr r1, [r10, #-4]!\n");
         printf("        add r0, r1, r2\n");
-        printf("        str r0, [r3], #4\n");
+        printf("        str r0, [r10], #4\n");
         $$ = $1 + $2;
       }
     | E SUB E {
-        printf("        ldr r2, [r3, #-4]!\n");
-        printf("        ldr r1, [r3, #-4]!\n");
+        printf("        ldr r2, [r10, #-4]!\n");
+        printf("        ldr r1, [r10, #-4]!\n");
         printf("        sub r0, r1, r2\n");
-        printf("        str r0, [r3], #4\n");
+        printf("        str r0, [r10], #4\n");
         $$ = $1 - $2;
       }
+    |E MUL_AND_N {
+        mul = 1;
+        n = atoi(MUL_AND_N[1]);
+        printf("        mov r0, #%d\n", n);
+        printf("        str r0, [r10], #4\n");
+        printf("        bl mul\n");
+        printf("        str r0, [r10], #4\n");
+        $$ = $1 * n;
+    }
     ;
 
 %%
 
 void yyerror(char *s) {
-    printf("Erro\n");
+    printf("Expressão inválida.\n");
 }
 
 void print_mul(){
-    printf("        ldr r2, [r3, #-4]!\n");
-    printf("        ldr r1, [r3, #-4]!\n");
+    printf("        end\n");
+    printf("mul     ldr r2, [r10, #-4]!\n");
+    printf("        ldr r1, [r10, #-4]!\n");
+    printf("        mov r0, #0\n");
+    printf("loop    cmp r1, #0\n");
+    printf("        ble endmul\n");
+    printf("        add r0, r0, r2\n");
+    printf("        sub r1, r1, #1\n");
+    printf("        b loop\n");
+    printf("endmul  mov pc, lr\n");
 }
 
+
 void print_init(){
-    printf("        mov r3, #3200\n");
+    printf("        mov r10, #3200\n");
 }
 
 int main() {

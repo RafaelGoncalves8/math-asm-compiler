@@ -4,11 +4,8 @@ program=$1
 dirtests=./test
 tests=`find $dirtests -name '*.in'`
 
-echo "$program"
-
 for t in $tests
 do
-  echo "$t"
-  echo "${t%.*}"
+  echo "${t%.*}.s"
   $program < $t > ./${t%.*}.s
 done
